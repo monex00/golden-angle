@@ -1,0 +1,12 @@
+# rendered output
+out/
+dist/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# marimo
+__marimo__/
