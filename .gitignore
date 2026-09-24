@@ -1,6 +1,8 @@
 # rendered output
 out/
 dist/
+site/
+index/
 
 # python
 __pycache__/
