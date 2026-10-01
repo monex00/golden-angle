@@ -6,11 +6,7 @@
 import marimo
 
 __generated_with = "0.24.0"
-app = marimo.App(
-    width="medium",
-    app_title="3d Fractal Tree",
-    css_file="notebook.css",
-)
+app = marimo.App(width="full", app_title="3d Fractal Tree")
 
 
 @app.cell
@@ -26,24 +22,8 @@ def _():
 
 @app.cell
 def _(mo):
-    # The two palettes of poster.py, both strictly MONOCHROME. Tone comes from
-    # density (thin strokes at partial opacity, overlapping), never from a
-    # colormap. `alpha` is part of the palette: ink on paper accumulates toward
-    # the dark and tolerates a lot of it, white on a dark ground saturates
-    # almost at once.
-    PAPER = dict(bg="#f4f0e8", ink="#383b3e", alpha=0.80)
-    NIGHT = dict(bg="#1d252b", ink="#fbfcfc", alpha=0.45)
-    PAL = NIGHT if mo.app_meta().theme == "dark" else PAPER
-    MONO = "IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace"
-    return MONO, NIGHT, PAL, PAPER
-
-
-@app.cell
-def _(mo):
     mo.md(r"""
-    # 3d Fractal Tree
-
-    ### golden-angle phyllotaxis
+    # 🌲 3d Fractal Tree: golden-angle phyllotaxis
 
     Two formulas do all the work:
 
@@ -130,7 +110,7 @@ def _(mo):
 
 
 @app.cell
-def _(PAL, go, np, phyllo_angle, phyllo_n):
+def _(go, np, phyllo_angle, phyllo_n):
     _k = np.arange(phyllo_n.value)
     _a = np.radians(phyllo_angle.value) * _k
     _r = np.sqrt(_k)
@@ -139,7 +119,12 @@ def _(PAL, go, np, phyllo_angle, phyllo_n):
             x=_r * np.cos(_a),
             y=_r * np.sin(_a),
             mode="markers",
-            marker=dict(size=5, color=PAL["ink"], opacity=0.9, line=dict(width=0)),
+            marker=dict(
+                size=6,
+                color=_k,
+                colorscale=[[0, "#ff2bd1"], [1, "#2bd4ff"]],
+                line=dict(width=0),
+            ),
             hoverinfo="skip",
         )
     )
@@ -147,8 +132,8 @@ def _(PAL, go, np, phyllo_angle, phyllo_n):
         height=440,
         showlegend=False,
         margin=dict(l=0, r=0, t=10, b=0),
-        paper_bgcolor=PAL["bg"],
-        plot_bgcolor=PAL["bg"],
+        paper_bgcolor="#05010a",
+        plot_bgcolor="#05010a",
         xaxis=dict(visible=False, scaleanchor="y", scaleratio=1),
         yaxis=dict(visible=False),
     )
@@ -225,8 +210,7 @@ def _(mo):
 
 
 @app.cell
-def _(MONO, PAL, PSI, demo_k, demo_theta, go, np):
-    _ink = PAL["ink"]
+def _(PSI, demo_k, demo_theta, go, np):
     _v = np.array([0.0, 0.0, 1.0])
     _e1 = np.array([1.0, 0.0, 0.0])
     _e2 = np.cross(_v, _e1)
@@ -244,10 +228,10 @@ def _(MONO, PAL, PSI, demo_k, demo_theta, go, np):
             y=[0, _v[1]],
             z=[0, _v[2]],
             mode="lines+text",
-            line=dict(color=_ink, width=9),
-            text=["", "v<sub>n</sub>"],
+            line=dict(color="#ff2bd1", width=10),
+            text=["", "v_n"],
             textposition="top center",
-            textfont=dict(color=_ink, size=15, family=MONO),
+            textfont=dict(color="#ff2bd1", size=15),
             hoverinfo="skip",
         )
     )
@@ -257,8 +241,7 @@ def _(MONO, PAL, PSI, demo_k, demo_theta, go, np):
             y=_ring[:, 1],
             z=_ring[:, 2],
             mode="lines",
-            line=dict(color=_ink, width=2),
-            opacity=0.4,
+            line=dict(color="#5a4a7a", width=2),
             hoverinfo="skip",
         )
     )
@@ -273,7 +256,7 @@ def _(MONO, PAL, PSI, demo_k, demo_theta, go, np):
                 y=[0, _d[1]],
                 z=[0, _d[2]],
                 mode="lines",
-                line=dict(color=_ink, width=4),
+                line=dict(color="#2bd4ff", width=6),
                 hoverinfo="skip",
             )
         )
@@ -283,8 +266,7 @@ def _(MONO, PAL, PSI, demo_k, demo_theta, go, np):
                 y=[0, _u[1]],
                 z=[0, _u[2]],
                 mode="lines",
-                line=dict(color=_ink, width=2, dash="dot"),
-                opacity=0.35,
+                line=dict(color="#3a7f8f", width=2, dash="dot"),
                 hoverinfo="skip",
             )
         )
@@ -292,10 +274,10 @@ def _(MONO, PAL, PSI, demo_k, demo_theta, go, np):
         height=460,
         showlegend=False,
         margin=dict(l=0, r=0, t=0, b=0),
-        paper_bgcolor=PAL["bg"],
+        paper_bgcolor="#05010a",
         uirevision="demo",
         scene=dict(
-            bgcolor=PAL["bg"],
+            bgcolor="#05010a",
             aspectmode="cube",
             xaxis=dict(visible=False, range=[-1.1, 1.1]),
             yaxis=dict(visible=False, range=[-1.1, 1.1]),
@@ -310,8 +292,8 @@ def _(MONO, PAL, PSI, demo_k, demo_theta, go, np):
 @app.cell
 def _(mo):
     mo.md(r"""
-    Heavy stroke = $\mathbf v_n$. Dotted = the candidate orthogonal directions $\mathbf u(\psi)$.
-    Thin strokes = the children $\mathbf v_{n+1}$, all sitting on the **cone** of half-angle $\theta$.
+    Magenta = $\mathbf v_n$. Dotted = the candidate orthogonal directions $\mathbf u(\psi)$.
+    Cyan = the children $\mathbf v_{n+1}$, all sitting on the **cone** of half-angle $\theta$.
     As $\theta \to 0$ the cone collapses (a stick); as $\theta \to \pi/2$ the children go
     horizontal (a flat crown).
     """)
@@ -325,6 +307,20 @@ def _(np):
         c, s = np.cos(ang), np.sin(ang)
         dot = np.sum(axis * vec, axis=1, keepdims=True)
         return vec * c + np.cross(axis, vec) * s + axis * dot * (1.0 - c)
+
+    def _hex_to_rgb(h):
+        h = h.lstrip("#")
+        return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
+
+    def palette_color(t, stops):
+        """Sample a ramp of hex colors at `t` in [0,1]; returns 'rgb(r,g,b)'."""
+        t = float(np.clip(t, 0.0, 1.0))
+        n = len(stops) - 1
+        i = min(int(t * n), n - 1)
+        f = t * n - i
+        a, b = _hex_to_rgb(stops[i]), _hex_to_rgb(stops[i + 1])
+        r, g, bl = (round(a[j] + (b[j] - a[j]) * f) for j in range(3))
+        return f"rgb({r},{g},{bl})"
 
     def seg_xyz(A, B):
         """Segments (A_i -> B_i) as three flat arrays, NaN as the separator.
@@ -343,7 +339,7 @@ def _(np):
             out.append(arr)
         return out
 
-    return rotate_about, seg_xyz
+    return palette_color, rotate_about, seg_xyz
 
 
 @app.cell
@@ -448,28 +444,29 @@ def _(PSI, np, rotate_about):
 
 
 @app.cell
-def _(PAL, go, np, seg_xyz):
+def _(go, np, palette_color, seg_xyz):
+    STOPS = ["#c400ff", "#ff2bd1", "#7a5cff", "#2bd4ff", "#8dfff2"]
+
     def tree_figure(
         tree,
         grow=None,
-        wash=True,
+        glow=True,
         tips=True,
         width0=9.0,
         wshrink=0.74,
-        pal=PAL,
+        stops=STOPS,
         height=760,
         azimuth=None,
         elevation=0.55,
         zoom=1.7,
+        bg="#05010a",
         uirevision="tree",
     ):
         """One trace per depth level: Plotly only supports line width per trace,
         not per vertex, so grouping by level is what gives the trunk-to-tip
-        taper. One ink for every level: the crown gets its tone from strokes
-        piling up, not from a colormap. The wash is the same trace drawn wide
-        at low opacity, ink bleeding into the paper."""
+        taper. The glow is the same trace drawn wide at low opacity."""
         levels = tree["levels"]
-        col, bg = pal["ink"], pal["bg"]
+        nd = max(len(levels) - 1, 1)
         traces, last_tip = [], None
 
         for lv, (A, B) in enumerate(levels):
@@ -479,8 +476,9 @@ def _(PAL, go, np, seg_xyz):
                     continue
                 B = A + (B - A) * f
             X, Y, Z = seg_xyz(A, B)
+            col = palette_color(lv / nd, stops)
             w = max(width0 * (wshrink**lv), 1.0)
-            if wash:
+            if glow:
                 traces.append(
                     go.Scatter3d(
                         x=X,
@@ -499,7 +497,6 @@ def _(PAL, go, np, seg_xyz):
                     z=Z,
                     mode="lines",
                     line=dict(color=col, width=w),
-                    opacity=pal["alpha"],
                     hoverinfo="skip",
                 )
             )
@@ -512,36 +509,31 @@ def _(PAL, go, np, seg_xyz):
                     y=last_tip[:, 1],
                     z=last_tip[:, 2],
                     mode="markers",
-                    marker=dict(size=1.8, color=col, opacity=0.55),
+                    marker=dict(
+                        size=1.8, color=palette_color(1.0, stops), opacity=0.55
+                    ),
                     hoverinfo="skip",
                 )
             )
 
         fig = go.Figure(traces)
-        # ranges from the FULL tree, not from what is drawn so far: a growing
-        # tree then grows inside a fixed frame instead of the frame chasing it
-        pts = np.vstack([levels[0][0]] + [B for _, B in levels])
-        lo, hi = pts.min(axis=0), pts.max(axis=0)
         scene = dict(
             bgcolor=bg,
             aspectmode="data",
-            xaxis=dict(visible=False, range=[lo[0], hi[0]]),
-            yaxis=dict(visible=False, range=[lo[1], hi[1]]),
-            zaxis=dict(visible=False, range=[lo[2], hi[2]]),
+            xaxis=dict(visible=False),
+            yaxis=dict(visible=False),
+            zaxis=dict(visible=False),
         )
-        # with no azimuth given: the three-quarter view of the plates, low and
-        # close, so the drawing fills the frame instead of floating in it
-        if azimuth is None:
-            azimuth, elevation, zoom = 0.9, 0.3, 1.8
-        scene["camera"] = dict(
-            eye=dict(
-                x=zoom * float(np.cos(azimuth)),
-                y=zoom * float(np.sin(azimuth)),
-                z=elevation * zoom,
-            ),
-            center=dict(x=0, y=0, z=0),
-            up=dict(x=0, y=0, z=1),
-        )
+        if azimuth is not None:
+            scene["camera"] = dict(
+                eye=dict(
+                    x=zoom * float(np.cos(azimuth)),
+                    y=zoom * float(np.sin(azimuth)),
+                    z=elevation * zoom,
+                ),
+                center=dict(x=0, y=0, z=0),
+                up=dict(x=0, y=0, z=1),
+            )
         fig.update_layout(
             height=height,
             showlegend=False,
@@ -554,7 +546,7 @@ def _(PAL, go, np, seg_xyz):
         )
         return fig
 
-    return (tree_figure,)
+    return STOPS, tree_figure
 
 
 @app.cell
@@ -615,14 +607,14 @@ def _(mo):
         3.0, 18.0, 0.5, 9.0, label="trunk thickness", show_value=True, full_width=True
     )
     ui_seed = mo.ui.number(0, 9999, 1, value=7, label="seed")
-    ui_wash = mo.ui.checkbox(True, label="ink wash")
+    ui_glow = mo.ui.checkbox(True, label="glow")
     ui_tips = mo.ui.checkbox(True, label="tips")
 
     controls = mo.hstack(
         [
             mo.vstack([ui_theta, ui_depth, ui_branches, ui_ratio]),
             mo.vstack([ui_gravity, ui_twist, ui_jitter, ui_width]),
-            mo.vstack([ui_seed, ui_wash, ui_tips]),
+            mo.vstack([ui_seed, ui_glow, ui_tips]),
         ],
         widths=[2, 2, 1],
         gap=2,
@@ -632,6 +624,7 @@ def _(mo):
         controls,
         ui_branches,
         ui_depth,
+        ui_glow,
         ui_gravity,
         ui_jitter,
         ui_ratio,
@@ -639,7 +632,6 @@ def _(mo):
         ui_theta,
         ui_tips,
         ui_twist,
-        ui_wash,
         ui_width,
     )
 
@@ -670,10 +662,10 @@ def _(
 
 
 @app.cell
-def _(mo, tree, tree_figure, ui_tips, ui_wash, ui_width):
+def _(mo, tree, tree_figure, ui_glow, ui_tips, ui_width):
     main_fig = tree_figure(
         tree,
-        wash=ui_wash.value,
+        glow=ui_glow.value,
         tips=ui_tips.value,
         width0=ui_width.value,
         height=780,
@@ -724,12 +716,7 @@ def _(mo):
         options=["0.1s", "0.2s", "0.5s"],
         default_interval="0.1s",
     )
-    mo.hstack(
-        [anim_mode, anim_play, anim_speed, anim_depth, anim_tick],
-        gap=1.5,
-        wrap=True,
-        justify="start",
-    )
+    mo.hstack([anim_mode, anim_play, anim_speed, anim_depth, anim_tick], gap=1.5)
     return anim_depth, anim_mode, anim_play, anim_speed, anim_tick
 
 
