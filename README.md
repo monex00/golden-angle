@@ -154,6 +154,7 @@ $b\lambda > 1$. Infinite wood inside a bounded volume.
 | file              | what it does                                                         |
 | ----------------- | -------------------------------------------------------------------- |
 | `fractal_tree.py` | the marimo notebook: the maths, `build_tree`, the interactive 3D tree |
+| `notebook.css`    | the notebook's ink-on-paper theme, same palette as the plates        |
 | `poster.py`       | four still plates, monochrome ink-on-paper                           |
 
 ```bash
